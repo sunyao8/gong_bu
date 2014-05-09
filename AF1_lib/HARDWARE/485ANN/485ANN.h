@@ -131,14 +131,11 @@ void TIM4_Int_Init(u16,u16);
 void TIM3_Int_Init(u16,u16);
 void order_trans_rs485(u8,u8,u8,u8,u8,u8);
 int rs485_trans_order(u8 *);
-void rs485_trans_status(u8 *);
 void status_trans_rs485(status_box *);
 void set_now_mystatus(u8 ,u8 ,u8 ,u8,u8,u8,u8);
 void init_mystatus(u8 ,u8 ,u8,u8,u8,u8);
-void set_statuslist_1(u8,u8,u8,u8,u8,u8);
-void set_statuslist_2(u8,u8,u8,u8,u8,u8);
 void delay_time(u32);//本系统的延时函数，time*450ms
-u8 inquiry_slave_status(u8,u8);//查询从机状态并保存到从机状态表中，参数id是要查询的从机号
+u8 inquiry_slave_status(u8 id,status_list_node *comm_list ,u8 *slave_comm);   
 void gonglvyinshu(void);
 void allphase(long *V,long *I);
 void temperature(void);   //电容器温度检测
@@ -160,9 +157,12 @@ void scanf_slave_machine(void);
  void status_trans_rs485_RT(void);//从机程序
   void status_trans_rs485_comm_RT(void);//从机程序
  void status_trans_rs485_scantask(status_box *mystatus);//从机程序
-void init_Queue(status_list_node *comm_list,u8 *slave_comm ,u8 group);
-void change_Queue(u8 list_flag,u8 Level, status_list_node *comm_list_1,status_list_node *comm_list_2,u8 *slave_comm);
-u8 computer_gonglu(status_list_node *comm_list_1,status_list_node *comm_list_2,u8 *slave_comm);
+void init_Queue(u8 id,u8 size_1,u8 size_2,u8 work_status_1,u8 work_status_2,u8 *slave_comm,status_list_node *comm_list);
+void change_Queue(u8 *slave_comm,status_list_node *comm_list,u8 size);
+u8 computer_gonglu(status_list_node *comm_list,u8 *slave_comm);
+void init_listindex(u8 *slave_comm);
+void del_comm_listnode(u8 id,u8 group,u8 *slave_comm,status_list_node *comm_list);
+void flash_comm_list(u8 id,u8 work_status ,u8 group,u8 *slave_comm,status_list_node *comm_list);
 
 //u8 sub_delaytime_15(u8);
 //u8 sub_delaytime_5(u8 );

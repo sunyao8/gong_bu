@@ -102,9 +102,7 @@ extern  u8 token[33];//主机号令牌
 
 extern status_box mystatus;
 
-extern status_list_node system_status_list_1[33];
-
-extern status_list_node system_status_list_2[33];
+extern status_list_node system_status_list[33];
 
 extern idle_list sort_idle_list_1[33];
 extern idle_list sort_idle_list_2[33];
@@ -140,8 +138,8 @@ void EXTI_Configuration(void);//初始化函数
 
 //#define ID  1
 #define temperature_gate 70
-#define SIZE_1 10
-#define SIZE_2 20
+#define SIZE_1 2
+#define SIZE_2 5
 #define WORK_STATUS_1	 0//0为没有工作  1为工作  2为坏掉，初始化为0
 #define WORK_STATUS_2    0 
 #define WORK_TIME_1 0
@@ -247,9 +245,9 @@ if(init==1)
 RT_FLAG=2;//自动设置变比RT_FLAG=0，非自动RT_FLAG=2
 init=0;
 }
-	  computer_gonglu(system_status_list_1,system_status_list_2,slave);
+computer_gonglu(system_status_list,slave);
 
-	   delay_time(1);
+	delay_time(1);
 	 
 	 delay_ms(800);
   
@@ -482,8 +480,6 @@ while(1)
   	if(mybox.master==1)
   		{
              scanf_slave_machine();
-  init_Queue(system_status_list_1,slave,1);
-  init_Queue(system_status_list_2,slave,2);
   		}
 
 }
