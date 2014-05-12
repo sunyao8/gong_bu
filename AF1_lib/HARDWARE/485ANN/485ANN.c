@@ -954,14 +954,14 @@ u8 inquiry_slave_status(u8 id,status_list_node *comm_list ,u8 *slave_comm)
 } //²éÑ¯´Ó»ú×´Ì¬²¢±£´æµ½´Ó»ú×´Ì¬±íÖÐ£¬²ÎÊýidÊÇÒª²éÑ¯µÄ´Ó»úºÅ
 
 /*******************¹¦ÂÊÒòËØÏà¹Øº¯Êý*****************************/
-
+ s8 flag_phase=1;
 void gonglvyinshu()
 {
 		 float adcv,adci,X,Y,Mag_v,Mag_i;
 	        u16 i=0,flag_v=5,flag_i=5;
 	         int32_t lX=0,lY=0;
 
-static u8 flag_phase=0;
+
 
 		id_num=AT24CXX_ReadOneByte(0x0010);
 
@@ -1013,54 +1013,25 @@ static u8 flag_phase=0;
                  dianliuzhi= (u32)(Mag_i* 65536)*K_BT/10;//(u32)(Mag_i* 65536)*K_BT/100;ÓÃÓÚ²âÊÔ±ä±È
                    }
 				angle[1]=atan2(lY,lX);
-/************************************phase*******************/
-				angle[3]=((angle[1]-angle[0])*360)/PI2;
+/************************************phase******************/
+				angle[3]=((angle[0]-angle[1])*360)/PI2;
                          	{
-				if((angle[3]>0.0&&angle[3]<180.0)||(angle[3]>-360.0&&angle[3]<-180.0))flag_phase=1;
+			if((angle[3]>3.0&&angle[3]<178.0))flag_phase=1;
 				
-				if((angle[3]>180.0&&angle[3]<360.0)||(angle[3]>-180.0&&angle[3]<-0.0))flag_phase=0;
-
+			if((angle[3]>-178.0&&angle[3]<-3.0))flag_phase=0;
+			//	if((angle[3]>0.0&&angle[3]<180.0)||(angle[3]>-360.0&&angle[3]<-180.0))flag_phase=1;
+			//	if((angle[3]>180.0&&angle[3]<360.0)||(angle[3]>-180.0&&angle[3]<-0.0))flag_phase=0;
 				}
 /************************************phase_end*******************/
 				
 				angle[2]=((angle[1]-angle[0])*360)/PI2-90;
-				if(angle[2]>0.0)
-			{
-				if(angle[2]<180)
-					{
-                           		gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100+0.5);
-								L_C_flag=1;
-				       }
-								if(angle[2]>=180&&angle[2]<=360)
-					{
-                           		gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100-0.5);
-								L_C_flag=0;
-				       }
 
-				
 
-                    }
-				
-				else if(angle[2]<=0.0)
-			{
-					if((angle[2]>=-180.0&&angle[2]<-360.0))
-					{
-			     gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100+0.5);
-				 L_C_flag=1;
+if((angle[2]>0.0)&&(angle[2]<180)){if(flag_phase==0)L_C_flag=0;else L_C_flag=1;}
+if((angle[2]<-0.0)&&(angle[2]>-180.0)){if(flag_phase==0)L_C_flag=1;else L_C_flag=0;}
+gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100);
 
-				  }
-
-					if((angle[2]>-180.0&&angle[2]<0.0))
-					{
-			     gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100-0.5);
-				 L_C_flag=0;
-
-				  }	
-		
-			}
-				
-if(flag_phase==1){if(L_C_flag==1)L_C_flag=0;if(L_C_flag==0)L_C_flag=1;}
-if(dianliuzhi<1)gonglvshishu=100;
+if(dianliuzhi<1)gonglvshishu=99;
 
 			 wugongkvar=(uint16_t)((1.732*dianliuzhi*dianya_zhi*abs(cos((angle[1]-angle[0]))*100))/100000);
 			wugong_95= (uint16_t)((17.32*dianliuzhi*dianya_zhi*31)/100000);//¹¦ÂÊÒòËØÔÚ0.95Ê±µÄ£¬ÎÞ¹¦¹¦Â
