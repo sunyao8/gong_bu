@@ -87,7 +87,7 @@ void start_task(void *pdata);
   	   
 extern box mybox;
   
-extern  u16  dog_clock;
+extern  vu16  dog_clock;
 
 extern OS_EVENT * RS485_MBOX,*RS485_STUTAS_MBOX,* RS485_RT;			//	rs485邮箱信号量
 
@@ -97,7 +97,7 @@ extern OS_EVENT *master_led_task;
 
 extern OS_EVENT *scan_slave;
 
-extern u8 cont;//用于更改主机号的记次数器
+extern vu8 cont;//用于更改主机号的记次数器
 extern  u8 token[33];//主机号令牌
 
 extern status_box mystatus;
@@ -109,18 +109,18 @@ extern idle_list sort_idle_list_2[33];
 extern busy_list sort_busy_list_1[33];
 extern busy_list sort_busy_list_2[33];
 
-extern u16 dianya_zhi;
-extern u8 hguestnum,gonglvshishu;
+extern vu16 dianya_zhi;
+extern vu8 hguestnum,gonglvshishu;
 extern u32 idle_time,scan_time,dianliuzhi;
-extern u16 wugongkvar;
+extern vu16 wugongkvar;
 extern s8 L_C_flag;
-extern u8 id_num,tempshuzhi;
+extern vu8 id_num,tempshuzhi;
 extern u8 slave[33];
 
 extern u16 m1_opentime,m2_opentime,m1_closetime,m2_closetime;
 extern u8 true_worktime1_flag,true_worktime2_flag;
 extern u8 RT_FLAG;
-extern u8 rework_time[2];
+extern vu8 rework_time[2];
 
 //接收缓存区
 
@@ -129,8 +129,8 @@ extern u8 rework_time[2];
 
 u8 led_lock=0;
 u8 init=20;
-u8 auto_on=1;
-u8 temperature_warn=0;
+vu8 auto_on=1;
+vu8 temperature_warn=0;
 int slave_control(u8,u8);
 void warn(void);
 
@@ -138,8 +138,8 @@ void EXTI_Configuration(void);//初始化函数
 
 //#define ID  1
 #define temperature_gate 70
-#define SIZE_1 2
-#define SIZE_2 5
+#define SIZE_1 20
+#define SIZE_2 20
 #define WORK_STATUS_1	 0//0为没有工作  1为工作  2为坏掉，初始化为0
 #define WORK_STATUS_2    0 
 #define WORK_TIME_1 0

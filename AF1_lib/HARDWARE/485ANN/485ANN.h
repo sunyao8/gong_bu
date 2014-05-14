@@ -130,7 +130,7 @@ void initmybox(void);
 void TIM4_Int_Init(u16,u16);
 void TIM3_Int_Init(u16,u16);
 void order_trans_rs485(u8,u8,u8,u8,u8,u8);
-int rs485_trans_order(u8 *);
+int rs485_trans_order(vu8 *);
 void status_trans_rs485(status_box *);
 void set_now_mystatus(u8 ,u8 ,u8 ,u8,u8,u8,u8);
 void init_mystatus(u8 ,u8 ,u8,u8,u8,u8);

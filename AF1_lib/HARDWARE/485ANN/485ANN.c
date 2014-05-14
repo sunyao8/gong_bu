@@ -16,9 +16,9 @@
 
 //u16 RS485_RX_BUF[64]; 		//接收缓冲,最大64个字节
 //接收到的数据长度
-u32 RS485_RX_CNT=0;  
+vu32 RS485_RX_CNT=0;  
 //模式控制
- u16  dog_clock=20;
+ vu16  dog_clock=20;
 		 u16 K_BT=10;//电流系数
 
  OS_EVENT * RS485_MBOX,* RS485_STUTAS_MBOX,* RS485_RT;			//	rs485邮箱信号量
@@ -31,7 +31,7 @@ OS_EVENT *master_led_task;
 
 OS_EVENT *scan_slave;
 
-u8 cont=0;//用于更改主机号的记次数器
+vu8 cont=0;//用于更改主机号的记次数器
 u32 life_time_1=0;//从机1工作时间的中间变量
 u32 life_time_2=0;//从机2工作时间的中间变量
 u32 idle_time=0;//主机用于轮休的时间
@@ -61,8 +61,8 @@ u8 done_count_1=0,done_count_2=0;
 u8 slave[30];
 
 //u8 rs485buf[LEN_control];//发送控制信息
-u8 rs485buf[LEN_control];//发送控制信息
-u8 statusbuf[LEN_status];//发送状态信息
+vu8 rs485buf[LEN_control];//发送控制信息
+vu8 statusbuf[LEN_status];//发送状态信息
 
 
 u8 alarm_lock=0;
@@ -87,16 +87,16 @@ double angle[4];
 /************************************************************/
 u16 wugong_95,wugong_computer;
 
-extern u8 id_num;
-extern u8 grafnum,tempshuzhi,gonglvshishu;
-extern u16 dianya_zhi,	wugongkvar,k;
-extern u32	dianliuzhi;
+extern vu8 id_num;
+extern vu8 grafnum,tempshuzhi,gonglvshishu;
+extern vu16 dianya_zhi,	wugongkvar,k;
+extern vu32	dianliuzhi;
 
 s8 L_C_flag=1;//感性容性标准变量
 /*****************************************************/
 extern status_box mystatus;
 extern u8 ligt_time;
-u8 rework_time[2];
+vu8 rework_time[2];
 extern u8 hguestnum;
  void TIM4_Int_Init(u16 arr,u16 psc)
 {
@@ -259,7 +259,7 @@ rework_time[1]=0;
 		void USART2_IRQHandler(void)
 {
  
-	u8 RS485_RX_BUF[512];
+	vu8 RS485_RX_BUF[512];
 	#ifdef OS_TICKS_PER_SEC	 	//如果时钟节拍数定义了,说明要使用ucosII了.
 	OSIntEnter();    
       #endif
@@ -357,7 +357,7 @@ rework_time[1]=0;
 
 } 
 
-void RS485_Send_Data(u8 *buf,u8 len)
+void RS485_Send_Data(vu8 *buf,u8 len)
 {
 	u8 t;
 	RS485_TX_EN=1;			//设置为发送模式
@@ -411,7 +411,7 @@ void turn_master_id(u8 id)//改变当前整个系统中主机的ID号
 
 
 
- int rs485_trans_order(u8 *tx_r485)//解析由主机发送过来的信号，并发送给下位机
+ int rs485_trans_order(vu8 *tx_r485)//解析由主机发送过来的信号，并发送给下位机
 {
  	         
  
@@ -2170,25 +2170,10 @@ delay_ms(TIME_TQ);
 /**************************************切主机**/
 
       {
-{
-for(i=slave_comm[8];i<=slave_comm[9]-1;i++)
-if(comm_list[i].work_status==1)
-
-{
-order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,0,CONTROL);
-		{
-delay_ms(TIME_TQ);
-return 0 ;
-
-		}
-}
-
-}
-
 
 
 {
-for(i=slave_comm[6];i<=slave_comm[7]-1;i++)
+for(i=slave_comm[2];i<=slave_comm[3]-1;i++)
 if(comm_list[i].work_status==1)
 {
 order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,0,CONTROL);
@@ -2216,8 +2201,11 @@ return 0 ;
 
 }
 
+
+
+
 {
-for(i=slave_comm[2];i<=slave_comm[3]-1;i++)
+for(i=slave_comm[6];i<=slave_comm[7]-1;i++)
 if(comm_list[i].work_status==1)
 {
 order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,0,CONTROL);
@@ -2229,6 +2217,23 @@ return 0 ;
 }
 
 }
+
+{
+for(i=slave_comm[8];i<=slave_comm[9]-1;i++)
+if(comm_list[i].work_status==1)
+
+{
+order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,0,CONTROL);
+		{
+delay_ms(TIME_TQ);
+return 0 ;
+
+		}
+}
+
+}
+
+
        }
 
 }
