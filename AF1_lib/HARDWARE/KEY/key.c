@@ -8,7 +8,7 @@
 static u8 m=1;
 u8 zhongduan_flag=1;
 vu8 id_num=0;
-vu8 grafnum=1,tempshuzhi,vernum=101,hguestnum=222,gonglvshishu=0;
+vu8 grafnum=1,tempshuzhi,vernum=104,hguestnum=222,gonglvshishu=0;
 vu16 dianya_zhi=0,wugongkvar=0;
 vu32	dianliuzhi=0;
  vu8 ligt_time=3;

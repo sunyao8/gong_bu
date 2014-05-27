@@ -71,7 +71,9 @@ u8 phase_zhi=0;
 #define NPT 512            /* NPT = No of FFT point*/
 #define FFT_NM NPT/2
 #define PI2  6.28318530717959
-#define TIME_TQ 1
+
+#define TIME_TQ 3
+#define BT 12 //ÉèÖÃ±ä±È £¬Êµ¼ÊÊÇ50±¶µÄ¹ØÏµ
 
 long lBUFIN_V[NPT];         /* Complex input vector */
 long lBUFOUT_V[FFT_NM];        /* Complex output vector */
@@ -237,7 +239,7 @@ extern u8 hguestnum;
  if(rework_time[0]==1)
  	{
  	count_rework[0]++;
-	if(count_rework[0]==10)
+	if(count_rework[0]==80)
 		{
 count_rework[0]=0;
 rework_time[0]=0;
@@ -246,7 +248,7 @@ rework_time[0]=0;
   if(rework_time[1]==1)
  	{
  	count_rework[1]++;
-	if(count_rework[1]==10)
+	if(count_rework[1]==80)
 		{
 count_rework[1]=0;
 rework_time[1]=0;
@@ -1009,29 +1011,48 @@ void gonglvyinshu()
                    X    = FFT_NM* ((float)lX) /32768;
                    Y    = FFT_NM* ((float)lY) /32768;
             //        Mag_i = sqrt(X*X + Y*Y)/FFT_NM/1.414;
-                    Mag_i = sqrt(X*X + Y*Y)/FFT_NM/1.414/2.9;					
+                    Mag_i = sqrt(X*X + Y*Y)/FFT_NM/1.414/4.2;					
                  dianliuzhi= (u32)(Mag_i* 65536)*K_BT/10;//(u32)(Mag_i* 65536)*K_BT/100;ÓÃÓÚ²âÊÔ±ä±È
                    }
 				angle[1]=atan2(lY,lX);
 /************************************phase******************/
 				angle[3]=((angle[0]-angle[1])*360)/PI2;
                          	{
-			if((angle[3]>3.0&&angle[3]<178.0))flag_phase=1;
+			//if((angle[3]>30.0&&angle[3]<150.0))flag_phase=1;
 				
-			if((angle[3]>-178.0&&angle[3]<-3.0))flag_phase=0;
+		//	if((angle[3]>-150.0&&angle[3]<-30.0))flag_phase=0;
+
+			{	if(angle[3]>0){while(1){if(angle[3]>360){angle[3]=angle[3]-360;} else break;}}
+				else if(angle[3]<0){while(1){if(angle[3]<-360){angle[3]=angle[3]+360;} else break;}}
+				
+				if((angle[3]>3.0&&angle[3]<178.0)||(angle[3]>-357.0&&angle[3]<-182.0))flag_phase=1;//ÕýÐò
+				
+			else if((angle[3]>182.0&&angle[3]<357.0)||(angle[3]>-178.0&&angle[3]<-3.0))flag_phase=0;//·´Ðò
+
+				}
 			//	if((angle[3]>0.0&&angle[3]<180.0)||(angle[3]>-360.0&&angle[3]<-180.0))flag_phase=1;
 			//	if((angle[3]>180.0&&angle[3]<360.0)||(angle[3]>-180.0&&angle[3]<-0.0))flag_phase=0;
 				}
 /************************************phase_end*******************/
 				
-				angle[2]=((angle[1]-angle[0])*360)/PI2-90;
+				angle[2]=((angle[0]-angle[1])*360)/PI2-90;					
 
-
-if((angle[2]>0.0)&&(angle[2]<180)){if(flag_phase==0)L_C_flag=0;else L_C_flag=1;}
-if((angle[2]<-0.0)&&(angle[2]>-180.0)){if(flag_phase==0)L_C_flag=1;else L_C_flag=0;}
+				if(angle[2]>0){while(1){if(angle[2]>360){angle[2]=angle[2]-360;} else break;}}
+			else if(angle[2]<0){while(1){if(angle[2]<-360){angle[2]=angle[2]+360;} else break;}} 
+if((flag_phase==1))
+{
+if(((angle[2]>2.0)&&(angle[2]<90))||((angle[2]>-358.0&&angle[2]<-270.0))){L_C_flag=1;}
+else if(((angle[2]<-2.0)&&(angle[2]>-90.0))||(angle[2]>270&&angle[2]<358)){ L_C_flag=0;}
+}
+if(flag_phase==0)
+{
+if(((angle[2]>180.0)&&(angle[2]<270))||((angle[2]>-180.0&&angle[2]<-90.0))){L_C_flag=1;}
+else if(((angle[2]<180.0)&&(angle[2]>90.0))||(angle[2]>-270&&angle[2]<-180)){L_C_flag=0;}
+}
 gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100);
 
-if(dianliuzhi<1)gonglvshishu=99;
+
+if(dianliuzhi<K_BT){gonglvshishu=99;dianliuzhi=0;}//µçÁ÷Ð¡ÓÚ0.1A Ê±£¬µçÁ÷¾ÍÇåÁã
 
 			 wugongkvar=(uint16_t)((1.732*dianliuzhi*dianya_zhi*abs(cos((angle[1]-angle[0]))*100))/100000);
 			wugong_95= (uint16_t)((17.32*dianliuzhi*dianya_zhi*31)/100000);//¹¦ÂÊÒòËØÔÚ0.95Ê±µÄ£¬ÎÞ¹¦¹¦Â
@@ -1892,7 +1913,7 @@ return 0;
 
 }
 //tempshuzhi=K_BT;
-K_BT=12;//Ð´ËÀ±ä±È´¦£¬ÓÃÓÚ·Ç×Ô¶¯ÅÐ¶Ï±ä±È£¬Èç¹û²ÉÓÃ×Ô¶¯»ñÈ¡±ä±ÈÐèÒª×¢µô¸Ã¾ä»°
+K_BT=BT;//Ð´ËÀ±ä±È´¦£¬ÓÃÓÚ·Ç×Ô¶¯ÅÐ¶Ï±ä±È£¬Èç¹û²ÉÓÃ×Ô¶¯»ñÈ¡±ä±ÈÐèÒª×¢µô¸Ã¾ä»°
 if(RT_FLAG==2)
 {
 gonglvyinshu();//¼ÆËã¹¦ÂÊ£¬µçÑ¹µçÁ÷ÓëÏÔÊ¾°´¼ü·Ö¿ª
@@ -2046,7 +2067,7 @@ delay_ms(TIME_TQ);
 
  }
 
-if(gonglvshishu>=95&&L_C_flag==1)
+if(gonglvshishu>95&&L_C_flag==1)
    
 {
 
@@ -2058,6 +2079,7 @@ if(mystatus.work_status[0]==1)
  	GPIO_SetBits(GPIOA,GPIO_Pin_0);
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,mystatus.work_status[1],0,mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
+ rework_time[0]=1;//Ïòtime3¶¨Ê±Æ÷´ò¿ª·ÅµçÊ±¼ä
 delay_ms(TIME_TQ);
 	  	  return 0 ;
 
@@ -2067,6 +2089,7 @@ if(mystatus.work_status[1]==1)
 {GPIO_SetBits(GPIOA,GPIO_Pin_8);
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],0,mystatus.work_time[0],0);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
+ rework_time[1]=1;//Ïòtime3¶¨Ê±Æ÷´ò¿ª·ÅµçÊ±¼ä
 delay_ms(TIME_TQ);
 	  return 0 ;
 
@@ -2153,6 +2176,7 @@ if(mystatus.work_status[0]==1)
  	GPIO_SetBits(GPIOA,GPIO_Pin_0);
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,mystatus.work_status[1],0,mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
+ rework_time[0]=1;//Ïòtime3¶¨Ê±Æ÷´ò¿ª·ÅµçÊ±¼ä
 delay_ms(TIME_TQ);
 	  	  return 0 ;
 
@@ -2162,6 +2186,7 @@ if(mystatus.work_status[1]==1)
 {GPIO_SetBits(GPIOA,GPIO_Pin_8);
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],0,mystatus.work_time[0],0);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
+ rework_time[1]=1;//Ïòtime3¶¨Ê±Æ÷´ò¿ª·ÅµçÊ±¼ä
 delay_ms(TIME_TQ);
 	  return 0 ;
 
