@@ -138,15 +138,15 @@ void EXTI_Configuration(void);//初始化函数
 
 //#define ID  1
 #define temperature_gate 70
-#define SIZE_1 2
-#define SIZE_2 5
+#define SIZE_1 5
+#define SIZE_2 10
 #define WORK_STATUS_1	 0//0为没有工作  1为工作  2为坏掉，初始化为0
 #define WORK_STATUS_2    0 
 #define WORK_TIME_1 0
 #define WORK_TIME_2	0
 /////////////////////////////////////////////
 extern u8 ligt_time;
-
+extern u8 BT_num;
 int main(void)
  {	 
   
@@ -236,7 +236,8 @@ mystatus.myid=mybox.myid;
      {	
      hguestnum=111;
 mybox.myid=AT24CXX_ReadOneByte(0x0010);
-mystatus.myid=mybox.myid;	 
+mystatus.myid=mybox.myid;
+BT_num=AT24CXX_ReadOneByte(0x0020);
 	OSSemPost(scan_slave);
 	
   if(init!=0) {init--;order_trans_rs485(mybox.myid,0,1,1,0,CONTROL);order_trans_rs485(mybox.myid,0,1,2,0,CONTROL);}

@@ -100,6 +100,8 @@ extern status_box mystatus;
 extern u8 ligt_time;
 vu8 rework_time[2];
 extern u8 hguestnum;
+extern u8 TR[16];
+extern u8 BT_num;
  void TIM4_Int_Init(u16 arr,u16 psc)
 {
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -389,6 +391,7 @@ mybox.myid=AT24CXX_ReadOneByte(0x0010);
  mybox.relay=0;
  mybox.message=0;
  mybox.end='*';	
+BT_num=AT24CXX_ReadOneByte(0x0020);
 						
 }
 
@@ -1766,7 +1769,6 @@ s32 gl[2];
 static u16 var=0;
 static u8 warning_flag=0;
 u16 min;
-u16 TR[]={4,5,6,8,10,12,16,20,24,30,40,50,60,80,100,120};
 
 {
 if(RT_FLAG==0)	
@@ -1913,7 +1915,9 @@ return 0;
 
 }
 //tempshuzhi=K_BT;
-K_BT=BT;//写死变比处，用于非自动判断变比，如果采用自动获取变比需要注掉该句话
+//K_BT=BT;//写死变比处，用于非自动判断变比，如果采用自动获取变比需要注掉该句话
+K_BT=TR[BT_num];
+
 if(RT_FLAG==2)
 {
 gonglvyinshu();//计算功率，电压电流与显示按键分开

@@ -7,11 +7,13 @@
 #include "24cxx.h" 	
 static u8 m=1;
 u8 zhongduan_flag=1;
-vu8 id_num=0;
+vu8 id_num=0,BT_num=0;
 vu8 grafnum=1,tempshuzhi,vernum=104,hguestnum=222,gonglvshishu=0;
 vu16 dianya_zhi=0,wugongkvar=0;
 vu32	dianliuzhi=0;
  vu8 ligt_time=3;
+ u8 TR[]={4,5,6,8,10,12,16,20,24,30,40,50,60,80,100,120};
+
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序为控制器设计，未经许可，不得复制外传
 //实验板栋达电子V3.0-1
@@ -55,10 +57,27 @@ void key_idset(void)
 			   if(h>=180)//180
 			   {		
 					zhongduan_flag=0;
-						
-			   		Clera_lcd();
+
+					if(grafnum==2)/*在电流 界面设置变比值*/
+						{
+
+					Clera_lcd();
+		
+			   		Graf_setid(TR[BT_num]);
+
+						}
+
+
+					if(grafnum==5)/*在id 界面设置id号*/
+						{
+
+					Clera_lcd();
 		
 			   		Graf_setid(id_num);
+
+						}
+					
+
 			   }
 			   else
 				   {  
@@ -100,12 +119,28 @@ void key_idset(void)
 					 	}
 						if(zhongduan_flag==0)
 				      	{
-                                                ligt_time=3;
+
+					if(grafnum==2)/*在电流 界面设置变比值*/
+                                              {
+					             ligt_time=3;
+							BT_num++;
+					  		if(id_num>16)BT_num=0;
+							Clera_lcd();
+	   						Graf_setid(TR[BT_num]);
+							AT24CXX_WriteOneByte(0x0020,BT_num);
+						}
+
+
+					if(grafnum==5)/*在id 界面设置id号*/
+						{
+					             ligt_time=3;
 							id_num++;
 					  		if(id_num>32)id_num=0;
 							Clera_lcd();
 	   						Graf_setid(id_num);
 							AT24CXX_WriteOneByte(0x0010,id_num);
+						}
+
 						}
 				   }
 	
