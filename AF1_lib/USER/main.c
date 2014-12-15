@@ -114,7 +114,7 @@ extern vu8 hguestnum,gonglvshishu;
 extern u32 idle_time,scan_time,dianliuzhi;
 extern vu16 wugongkvar;
 extern s8 L_C_flag;
-extern vu8 id_num,tempshuzhi;
+extern vu8 tempshuzhi;
 extern u8 slave[33];
 
 extern u16 m1_opentime,m2_opentime,m1_closetime,m2_closetime;
@@ -137,16 +137,18 @@ void warn(void);
 void EXTI_Configuration(void);//初始化函数
 
 //#define ID  1
-#define temperature_gate 70
-#define SIZE_1 5
-#define SIZE_2 10
+#define temperature_gate 55
+#define SIZE_1 2
+#define SIZE_2 5
 #define WORK_STATUS_1	 0//0为没有工作  1为工作  2为坏掉，初始化为0
 #define WORK_STATUS_2    0 
 #define WORK_TIME_1 0
 #define WORK_TIME_2	0
 /////////////////////////////////////////////
 extern u8 ligt_time;
-extern u8 BT_num;
+extern vu8 BT_num;
+extern vu8 warn_volt_onlimt;
+extern vu8 id_num;
 int main(void)
  {	 
   
@@ -215,7 +217,7 @@ void Receive_task(void *pdate)//从机任务
 	 msg=(u8 *)OSMboxPend(RS485_MBOX,0,&err);//接收到有数据
 	 flag1=rs485_trans_order(msg);
 	 dog_clock=20;
-mybox.myid=AT24CXX_ReadOneByte(0x0010);
+mybox.myid=id_num;
 mystatus.myid=mybox.myid;
 	 if((flag1==1))/***是本机信息***/
 	 	{		//LED1=!LED1;	  
@@ -235,21 +237,20 @@ mystatus.myid=mybox.myid;
   	if(mybox.master==1)
      {	
      hguestnum=111;
-mybox.myid=AT24CXX_ReadOneByte(0x0010);
+mybox.myid=id_num;
 mystatus.myid=mybox.myid;
-BT_num=AT24CXX_ReadOneByte(0x0020);
 	OSSemPost(scan_slave);
 	
   if(init!=0) {init--;order_trans_rs485(mybox.myid,0,1,1,0,CONTROL);order_trans_rs485(mybox.myid,0,1,2,0,CONTROL);}
 if(init==1)
 {
-RT_FLAG=2;//自动设置变比RT_FLAG=0，非自动RT_FLAG=2
+RT_FLAG=4;//自动设置变比RT_FLAG=5，非自动RT_FLAG=4
 init=0;
 }
-computer_gonglu(system_status_list,slave);
+	computer_gonglu(system_status_list,slave);
 
 	delay_time(1);
-	 
+
 	 delay_ms(800);
   
 			
@@ -286,7 +287,6 @@ void SETID_task(void *pdata)
         OS_CPU_SR cpu_sr=0;  	    	
           while(1)
           	{
-		  id_num=AT24CXX_ReadOneByte(0x0010);
 	///	  id_num=1;//测试开发板使用
 		if(id_num<1||id_num>33)
 			{            		
@@ -541,7 +541,7 @@ if((mystatus.work_status[0]==1))
 	GPIO_SetBits(GPIOA,GPIO_Pin_0);
 rework_time[0]=1;
 mystatus.work_status[0]=0;
-ligt_time=3;
+ligt_time=16;
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
  }
 
@@ -550,7 +550,7 @@ if((mystatus.work_status[1]==1))
 GPIO_SetBits(GPIOA,GPIO_Pin_8);
 rework_time[1]=1;
 mystatus.work_status[1]=0;
-ligt_time=3;
+ligt_time=16;
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
  }
 }
@@ -563,7 +563,7 @@ if((mystatus.work_status[0]==0)&&rework_time[0]==0)
  	{
 GPIO_ResetBits(GPIOA,GPIO_Pin_0);
 mystatus.work_status[0]=1;
-ligt_time=3;
+ligt_time=16;
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
  		}  
  }
@@ -575,7 +575,7 @@ if((mystatus.work_status[1]==0)&&rework_time[1]==0)
 		{
 GPIO_ResetBits(GPIOA,GPIO_Pin_8);
 mystatus.work_status[1]=1;
-ligt_time=3;
+ligt_time=16;
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
 }
 
@@ -598,9 +598,11 @@ static u8 warning_flag=0;
 if(tempshuzhi>=temperature_gate&&temperature_warn==0&&auto_on==1)
 {
 GPIO_SetBits(GPIOA,GPIO_Pin_0);
+ rework_time[0]=1;//向time3定时器打开放电时间
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],2,2,0,mystatus.work_time[1]);
 	 delay_ms(100);
 GPIO_SetBits(GPIOA,GPIO_Pin_8);
+ rework_time[1]=1;//向time3定时器打开放电时间
      LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
 	 temperature_warn=1;
 }
@@ -614,13 +616,14 @@ if(tempshuzhi<=(temperature_gate-2)&&temperature_warn==1)
 }
 }
 
-/************从机功能 温度报警END************************/	
+/************从机功能 温度报警END***********************/	
+
 //if(mybox.master==0)
 {
 /**************************************过压保护**
 {
 
-if((dianya_zhi>420||dianya_zhi<330)&&warning_flag==0)
+if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330)&&warning_flag==0)
 {
 mystatus.work_status[0]=2;
 mystatus.work_status[1]=2;
@@ -628,7 +631,7 @@ mystatus.work_status[1]=2;
 LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
 warning_flag=1;
 }
-if(warning_flag==1&&dianya_zhi<=417&&dianya_zhi>=333)
+if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-3)&&dianya_zhi>=333)
 	{
 
 mystatus.work_status[0]=0;
@@ -639,7 +642,7 @@ LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
 	warning_flag=0;
      }
 }
-************************************过压保护END**/
+***********************************过压保护END**/
 
 }
 

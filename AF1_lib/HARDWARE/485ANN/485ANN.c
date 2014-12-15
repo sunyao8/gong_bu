@@ -40,7 +40,7 @@ u16 m1_opentime,m2_opentime,m1_closetime,m2_closetime;//´Ó»úÊ¹ÓÃ±äÁ¿
 u8 true_worktime1_flag=0,true_worktime2_flag=0;//´Ó»úÊ¹ÓÃ±äÁ¿£¬ÓÃÓÚ±êÊ¶ÏÂÎ»»úÕæÕıÍ¸ÇĞµÄÊ±¼äµã
 u8 turn_flag=1;//ÂÖĞİÊ¹ÓÃ±äÁ¿
 s8 turn_label_idle=0;//ÂÖĞİÊ¹ÓÃ±äÁ¿
- u8 RT_FLAG=3;
+ u8 RT_FLAG=100;
 
 box mybox;
 status_box mystatus;
@@ -72,7 +72,7 @@ u8 phase_zhi=0;
 #define FFT_NM NPT/2
 #define PI2  6.28318530717959
 
-#define TIME_TQ 3
+#define TIME_TQ 4000
 #define BT 12 //ÉèÖÃ±ä±È £¬Êµ¼ÊÊÇ50±¶µÄ¹ØÏµ
 
 long lBUFIN_V[NPT];         /* Complex input vector */
@@ -90,6 +90,7 @@ double angle[4];
 u16 wugong_95,wugong_computer;
 
 extern vu8 id_num;
+extern vu8 warn_volt_onlimt;
 extern vu8 grafnum,tempshuzhi,gonglvshishu;
 extern vu16 dianya_zhi,	wugongkvar,k;
 extern vu32	dianliuzhi;
@@ -98,9 +99,9 @@ s8 L_C_flag=1;//¸ĞĞÔÈİĞÔ±ê×¼±äÁ¿
 /*****************************************************/
 extern status_box mystatus;
 extern u8 ligt_time;
-vu8 rework_time[2];
+vu8 rework_time[2]={1,1};
 extern u8 hguestnum;
-extern u8 TR[16];
+extern u8 TR[19];
 extern u8 BT_num;
  void TIM4_Int_Init(u16 arr,u16 psc)
 {
@@ -241,7 +242,7 @@ extern u8 BT_num;
  if(rework_time[0]==1)
  	{
  	count_rework[0]++;
-	if(count_rework[0]==80)
+	if(count_rework[0]==120)
 		{
 count_rework[0]=0;
 rework_time[0]=0;
@@ -250,7 +251,7 @@ rework_time[0]=0;
   if(rework_time[1]==1)
  	{
  	count_rework[1]++;
-	if(count_rework[1]==80)
+	if(count_rework[1]==120)
 		{
 count_rework[1]=0;
 rework_time[1]=0;
@@ -383,16 +384,16 @@ void initmybox()//³õÊ¼»¯×ÔÉíĞÅÏ¢
   
   mybox.master=0;
  mybox.start='&';
-mybox.myid=AT24CXX_ReadOneByte(0x0010);
-///mybox.myid=1;
+mybox.myid=AT24CXX_ReadOneByte(0xa000);
  mybox.source=0;
  mybox.destination=0;
  mybox.send=0;
  mybox.relay=0;
  mybox.message=0;
  mybox.end='*';	
-BT_num=AT24CXX_ReadOneByte(0x0020);
-						
+ id_num=mybox.myid;
+BT_num=AT24CXX_ReadOneByte(0x0100);
+warn_volt_onlimt=	AT24CXX_ReadOneByte(0x1000);					
 }
 
 void turn_master_id(u8 id)//¸Ä±äµ±Ç°Õû¸öÏµÍ³ÖĞÖ÷»úµÄIDºÅ
@@ -968,7 +969,7 @@ void gonglvyinshu()
 
 
 
-		id_num=AT24CXX_ReadOneByte(0x0010);
+//		id_num=AT24CXX_ReadOneByte(0x0010);//¼ÓÉÏÕâ¾äºó£¬ÉèÖÃ±ä±ÈBTºó£¬idºÅ»á³öÏÖ¹éÁãÎÊÌâ£¬Ğ¾Æ¬¹îÒìÎÊÌâ
 
 /*	 for(i=0;i<600;i++)
 	  {
@@ -1055,7 +1056,7 @@ else if(((angle[2]<180.0)&&(angle[2]>90.0))||(angle[2]>-270&&angle[2]<-180)){L_C
 gonglvshishu=(u8)abs(sin((angle[1]-angle[0]))*100);
 
 
-if(dianliuzhi<K_BT){gonglvshishu=99;dianliuzhi=0;}//µçÁ÷Ğ¡ÓÚ0.1A Ê±£¬µçÁ÷¾ÍÇåÁã
+if(dianliuzhi<=K_BT){gonglvshishu=100;dianliuzhi=0;L_C_flag=1;}//µçÁ÷Ğ¡ÓÚ0.1A Ê±£¬µçÁ÷¾ÍÇåÁã
 
 			 wugongkvar=(uint16_t)((1.732*dianliuzhi*dianya_zhi*abs(cos((angle[1]-angle[0]))*100))/100000);
 			wugong_95= (uint16_t)((17.32*dianliuzhi*dianya_zhi*31)/100000);//¹¦ÂÊÒòËØÔÚ0.95Ê±µÄ£¬ÎŞ¹¦¹¦Â
@@ -1771,7 +1772,7 @@ static u8 warning_flag=0;
 u16 min;
 
 {
-if(RT_FLAG==0)	
+if(RT_FLAG==5)	
 {
         u8 err;
 		gonglvyinshu();//¼ÆËã¹¦ÂÊ£¬µçÑ¹µçÁ÷ÓëÏÔÊ¾°´¼ü·Ö¿ª
@@ -1790,7 +1791,7 @@ order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,1,CONTROL);
     // if(err==OS_ERR_TIMEOUT);
 //else 
 		{
-RT_FLAG=1;
+RT_FLAG=3;
 var=var+(200*dianya_zhi*dianya_zhi)/450/450;
 		}
 }
@@ -1812,7 +1813,7 @@ order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,1,CONTROL);
   //if(err==OS_ERR_TIMEOUT);
 //else 
 		{
-RT_FLAG=1;
+RT_FLAG=3;
 var=var+(100*dianya_zhi*dianya_zhi)/450/450;
 		}
 }
@@ -1831,7 +1832,7 @@ order_trans_rs485(mybox.myid,comm_list[i].myid,1,comm_list[i].group,1,CONTROL);
    //  if(err==OS_ERR_TIMEOUT);
 //	else 
 		{
-RT_FLAG=1;
+RT_FLAG=3;
 var=var+(50*dianya_zhi*dianya_zhi)/450/450;
 		}
 }
@@ -1854,7 +1855,7 @@ if(mystatus.work_status[0]==0)
 GPIO_ResetBits(GPIOA,GPIO_Pin_0);
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],1,mystatus.work_status[1],mystatus.work_time[0],mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
-	  RT_FLAG=1;
+	  RT_FLAG=3;
 var=var+(10*mystatus.work_status[0]*dianya_zhi*dianya_zhi)/450/450;
 
  }
@@ -1863,7 +1864,7 @@ if(mystatus.work_status[1]==0)
 {GPIO_ResetBits(GPIOA,GPIO_Pin_8);
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],1,mystatus.work_time[0],mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
-	  	  RT_FLAG=1;
+	  	  RT_FLAG=3;
 var=var+(10*mystatus.work_status[1]*dianya_zhi*dianya_zhi)/450/450;
 
  }
@@ -1872,7 +1873,7 @@ var=var+(10*mystatus.work_status[1]*dianya_zhi*dianya_zhi)/450/450;
 
 }
 
-if(RT_FLAG==1)	
+if(RT_FLAG==3)	
 {
 delay_us(2500000);//36->512
 gonglvyinshu();//¼ÆËã¹¦ÂÊ£¬µçÑ¹µçÁ÷ÓëÏÔÊ¾°´¼ü·Ö¿ª
@@ -1880,12 +1881,16 @@ if(L_C_flag==1)gl[1]=wugongkvar;
 else gl[1]=-wugongkvar;
 min=abs(abs(gl[0]-gl[1])*TR[0]-var);
 
-for(i=1;i<16;i++)
+for(i=0;i<19;i++)
 {
-if(abs(abs(gl[0]-gl[1])*TR[i]-var)<=min){min=abs(abs(gl[0]-gl[1])*TR[i]-var);K_BT=TR[i];}
+if(abs(abs(gl[0]-gl[1])*TR[i]-var)<=min){min=abs(abs(gl[0]-gl[1])*TR[i]-var);K_BT=TR[i];BT_num=i;}
 
 }
-RT_FLAG=2;
+/*×Ô¶¯ÅĞ±ğ±ä±È½øĞĞÏµÍ³¼ÇÒä£¬´æÈëEPROMÀï*/
+
+AT24CXX_WriteOneByte(0x0100,BT_num);					
+
+RT_FLAG=4;//2//2²»ÄÜÓÃĞ¾Æ¬bug
 /**************************************ÇĞÖ÷»ú**/
 {
  	{
@@ -1916,15 +1921,16 @@ return 0;
 }
 //tempshuzhi=K_BT;
 //K_BT=BT;//Ğ´ËÀ±ä±È´¦£¬ÓÃÓÚ·Ç×Ô¶¯ÅĞ¶Ï±ä±È£¬Èç¹û²ÉÓÃ×Ô¶¯»ñÈ¡±ä±ÈĞèÒª×¢µô¸Ã¾ä»°
+
 K_BT=TR[BT_num];
 
-if(RT_FLAG==2)
+if(RT_FLAG==4)
 {
 gonglvyinshu();//¼ÆËã¹¦ÂÊ£¬µçÑ¹µçÁ÷ÓëÏÔÊ¾°´¼ü·Ö¿ª
 
 /**************************************¹ıÑ¹±£»¤**/
 {
-if((dianya_zhi>420||dianya_zhi<330))
+if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330))
 {
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],2,mystatus.work_status[1],0,mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
@@ -1933,7 +1939,7 @@ if((dianya_zhi>420||dianya_zhi<330))
 
 }
 
-if((dianya_zhi>420||dianya_zhi<330)&&warning_flag==0)
+if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330)&&warning_flag==0)
 {
 {
  	{
@@ -1954,7 +1960,7 @@ order_trans_rs485(mybox.myid,0,1,2,0,CONTROL);
 delay_ms(5000);
 warning_flag=1;
 }
-if(warning_flag==1&&dianya_zhi<=417&&dianya_zhi>=333)
+if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-3)&&dianya_zhi>=333)
 	{warning_flag=0;
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,mystatus.work_status[1],0,mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
@@ -1965,9 +1971,9 @@ if(warning_flag==1&&dianya_zhi<=417&&dianya_zhi>=333)
 }
 /**************************************¹ıÑ¹±£»¤END**/
 
-if(dianya_zhi<=420&&dianya_zhi>=330&&warning_flag==0)
+if(dianya_zhi<=(warn_volt_onlimt+400)&&dianya_zhi>=330&&warning_flag==0)
 {
-if(gonglvshishu<90&&L_C_flag==1)
+if(gonglvshishu<95&&L_C_flag==1)
  {
       {
       if(wugongkvar>=20)
@@ -2071,7 +2077,7 @@ delay_ms(TIME_TQ);
 
  }
 
-if(gonglvshishu>95&&L_C_flag==1)
+if(gonglvshishu>98&&L_C_flag==1)
    
 {
 
