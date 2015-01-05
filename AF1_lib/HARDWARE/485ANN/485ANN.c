@@ -94,12 +94,12 @@ extern vu8 warn_volt_onlimt;
 extern vu8 grafnum,tempshuzhi,gonglvshishu;
 extern vu16 dianya_zhi,	wugongkvar,k;
 extern vu32	dianliuzhi;
-
+extern vu32 init_time;
 s8 L_C_flag=1;//感性容性标准变量
 /*****************************************************/
 extern status_box mystatus;
 extern u8 ligt_time;
-vu8 rework_time[2]={1,1};
+vu8 rework_time[2];
 extern u8 hguestnum;
 extern u8 TR[19];
 extern u8 BT_num;
@@ -150,7 +150,7 @@ extern u8 BT_num;
 	if(ligt_time>0)ligt_time--;
 
 	if(ligt_time==0)LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
-
+if(init_time>0)init_time--;
 /*
 {
 	if(mybox.master==1)	
@@ -246,6 +246,8 @@ extern u8 BT_num;
 		{
 count_rework[0]=0;
 rework_time[0]=0;
+ set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,mystatus.work_status[1],0,mystatus.work_time[1]);
+
 	  }
 	}
   if(rework_time[1]==1)
@@ -255,6 +257,8 @@ rework_time[0]=0;
 		{
 count_rework[1]=0;
 rework_time[1]=0;
+ set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],0,mystatus.work_time[0],0);
+
 	  }
 	}
 
@@ -1117,17 +1121,17 @@ void LIGHT(u8 status_1,u8 status_2,u8 background )
 {
 if(background==1)
 {
-if(status_1==0&&status_2==1)HT595_Send_Byte((GREEN_RED)|background_light_on);
-if(status_1==1&&status_2==0)HT595_Send_Byte((RED_GREEN)|background_light_on);
-if(status_1==0&&status_2==0)HT595_Send_Byte((GREEN_GREEN)|background_light_on);
+if((status_1==0||status_1==3)&&status_2==1)HT595_Send_Byte((GREEN_RED)|background_light_on);
+if(status_1==1&&(status_2==0||status_2==3))HT595_Send_Byte((RED_GREEN)|background_light_on);
+if((status_1==0||status_1==3)&&(status_2==0||status_2==3))HT595_Send_Byte((GREEN_GREEN)|background_light_on);
 if(status_1==1&&status_2==1)HT595_Send_Byte((RED_RED)|background_light_on);
 if(status_1==2&&status_2==2)HT595_Send_Byte((YELLOW_YELLOW)|background_light_on);
 }
 if(background==0)
 {
-if(status_1==0&&status_2==1)HT595_Send_Byte((GREEN_RED));
-if(status_1==1&&status_2==0)HT595_Send_Byte((RED_GREEN));
-if(status_1==0&&status_2==0)HT595_Send_Byte((GREEN_GREEN));
+if((status_1==0||status_1==3)&&status_2==1)HT595_Send_Byte((GREEN_RED));
+if(status_1==1&&(status_2==0||status_2==3))HT595_Send_Byte((RED_GREEN));
+if((status_1==0||status_1==3)&&(status_2==0||status_2==3))HT595_Send_Byte((GREEN_GREEN));
 if(status_1==1&&status_2==1)HT595_Send_Byte((RED_RED));
 if(status_1==2&&status_2==2)HT595_Send_Byte((YELLOW_YELLOW));
 }
@@ -1960,11 +1964,13 @@ order_trans_rs485(mybox.myid,0,1,2,0,CONTROL);
 delay_ms(5000);
 warning_flag=1;
 }
-if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-3)&&dianya_zhi>=333)
+if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-7)&&dianya_zhi>=333)
 	{warning_flag=0;
- set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,mystatus.work_status[1],0,mystatus.work_time[1]);
+rework_time[0]=1;
+rework_time[1]=1;
+ set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],3,mystatus.work_status[1],0,mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
- set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],0,mystatus.work_time[0],0);
+ set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],3,mystatus.work_time[0],0);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
 
 }

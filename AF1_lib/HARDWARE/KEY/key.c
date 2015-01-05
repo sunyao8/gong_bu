@@ -45,10 +45,7 @@ void key_idset(void)
 	u8 h=0;
 	if((KEY0==0)&&m)
 	{
-		{
-	LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
-           ligt_time=16;	  // delay_us(10000);
-	   }
+		
 	m=0;
 		if(grafnum==1)/*在电压 界面设置  过压上限       */
 		{
@@ -124,7 +121,7 @@ void key_idset(void)
 		}
 			     if(h<200)
 				   {  
-				     if(zhongduan_flag==1&&zhongduan_flag_BT==1&&zhongduan_flag_warn_volt==1)
+				     if(zhongduan_flag==1&&zhongduan_flag_BT==1&&zhongduan_flag_warn_volt==1&&ligt_time>0)
 				      	{
 					  		grafnum++;
 					  		if(grafnum>6)grafnum=1;
@@ -194,6 +191,10 @@ void key_idset(void)
 							AT24CXX_WriteOneByte(0xa000,id_num);
 						}
 				   }
+{
+	LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
+           ligt_time=16;	  // delay_us(10000);
+	   }
 	
 	}
 	else if(KEY0==1)

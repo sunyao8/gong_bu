@@ -131,6 +131,7 @@ u8 led_lock=0;
 u8 init=20;
 vu8 auto_on=1;
 vu8 temperature_warn=0;
+vu32 init_time=80;
 int slave_control(u8,u8);
 void warn(void);
 
@@ -138,8 +139,8 @@ void EXTI_Configuration(void);//初始化函数
 
 //#define ID  1
 #define temperature_gate 55
-#define SIZE_1 2
-#define SIZE_2 5
+#define SIZE_1 20
+#define SIZE_2 20
 #define WORK_STATUS_1	 0//0为没有工作  1为工作  2为坏掉，初始化为0
 #define WORK_STATUS_2    0 
 #define WORK_TIME_1 0
@@ -207,6 +208,7 @@ void Receive_task(void *pdate)//从机任务
 {   u8 err;
 	 u8 *msg;
 	 int flag1;
+	 
     while(1)
     	{
 		 if(mybox.master==1)
@@ -222,8 +224,10 @@ mystatus.myid=mybox.myid;
 	 if((flag1==1))/***是本机信息***/
 	 	{		//LED1=!LED1;	  
 		       dog_clock=20;
+
+     				{
 	 	      slave_control(mybox.relay,mybox.message);
-			  	   
+		       	} 
 	 	}
 
 	}
@@ -336,7 +340,7 @@ int slave_control(u8 i,u8 j)//给下下位机放指令
     }
 if((tempshuzhi<temperature_gate)&&(temperature_warn==0))/***是本机信息***/
 {
-   if(mybox.send==1&&auto_on==1) //下位机控制
+   if(mybox.send==1&&auto_on==1&&init_time==0) //下位机控制
    	{ 	 // LED1=!LED1;
  if(i==1&&j==1)
  {
@@ -354,7 +358,8 @@ if(mystatus.work_status[0]==0&&rework_time[0]==0)
 if(mystatus.work_status[0]==1)
 {
 	GPIO_SetBits(GPIOA,GPIO_Pin_0);
- set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,mystatus.work_status[1],0,mystatus.work_time[1]);
+
+ set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],3,mystatus.work_status[1],0,mystatus.work_time[1]);//状态3为放电状态
  rework_time[0]=1;//向time3定时器打开放电时间
    if(ligt_time>0)LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
       if(ligt_time==0)LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
@@ -376,7 +381,8 @@ if(mystatus.work_status[1]==0&&rework_time[1]==0)
 if(mystatus.work_status[1]==1)
    {
 	GPIO_SetBits(GPIOA,GPIO_Pin_8);
- set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],0,mystatus.work_time[0],0);
+
+ set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],mystatus.work_status[0],3,mystatus.work_time[0],0);//状态3为放电状态
  rework_time[1]=1;//向time3定时器打开放电时间
    if(ligt_time>0)LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
       if(ligt_time==0)LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
@@ -540,7 +546,7 @@ if((mystatus.work_status[0]==1))
 	{
 	GPIO_SetBits(GPIOA,GPIO_Pin_0);
 rework_time[0]=1;
-mystatus.work_status[0]=0;
+mystatus.work_status[0]=3;
 ligt_time=16;
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
  }
@@ -549,7 +555,7 @@ if((mystatus.work_status[1]==1))
 	{
 GPIO_SetBits(GPIOA,GPIO_Pin_8);
 rework_time[1]=1;
-mystatus.work_status[1]=0;
+mystatus.work_status[1]=3;
 ligt_time=16;
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],1);
  }
@@ -598,19 +604,19 @@ static u8 warning_flag=0;
 if(tempshuzhi>=temperature_gate&&temperature_warn==0&&auto_on==1)
 {
 GPIO_SetBits(GPIOA,GPIO_Pin_0);
- rework_time[0]=1;//向time3定时器打开放电时间
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],2,2,0,mystatus.work_time[1]);
 	 delay_ms(100);
 GPIO_SetBits(GPIOA,GPIO_Pin_8);
- rework_time[1]=1;//向time3定时器打开放电时间
      LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
 	 temperature_warn=1;
 }
 
-if(tempshuzhi<=(temperature_gate-2)&&temperature_warn==1)
+if(tempshuzhi<=(temperature_gate-5)&&temperature_warn==1)
 {
 	 temperature_warn=0;
- set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],0,0,0,mystatus.work_time[1]);
+	  rework_time[1]=1;//向time3定时器打开放电时间
+ rework_time[0]=1;//向time3定时器打开放电时间
+set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],3,3,0,mystatus.work_time[1]);
      LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
 
 }
