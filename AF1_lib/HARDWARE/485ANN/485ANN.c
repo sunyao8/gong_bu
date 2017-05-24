@@ -1163,7 +1163,7 @@ u8 i,g;
 u8 flag_comm=0;
 u8 *msg;
   u8 err;
-    static u8 comm_err[11];
+    static u8 comm_err[21];
 static u8 first_init=1;
 if(first_init==1)
 {
@@ -1172,7 +1172,7 @@ first_init=0;
 }
 
 {
-for(i=1;i<=10;i++)
+for(i=1;i<=20;i++)
 	{  
 
 for(g=0;g<=slave[9]-1;g++)
@@ -1934,7 +1934,7 @@ gonglvyinshu();//计算功率，电压电流与显示按键分开
 
 /**************************************过压保护**/
 {
-if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330))
+if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<310))
 {
  set_now_mystatus(mystatus.myid,mystatus.size[0],mystatus.size[1],2,mystatus.work_status[1],0,mystatus.work_time[1]);
       LIGHT(mystatus.work_status[0],mystatus.work_status[1],0);
@@ -1943,7 +1943,7 @@ if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330))
 
 }
 
-if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330)&&warning_flag==0)
+if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<310)&&warning_flag==0)
 {
 {
  	{
@@ -1964,7 +1964,7 @@ order_trans_rs485(mybox.myid,0,1,2,0,CONTROL);
 delay_ms(5000);
 warning_flag=1;
 }
-if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-7)&&dianya_zhi>=333)
+if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-7)&&dianya_zhi>=313)
 	{warning_flag=0;
 rework_time[0]=1;
 rework_time[1]=1;
@@ -1977,9 +1977,9 @@ rework_time[1]=1;
 }
 /**************************************过压保护END**/
 
-if(dianya_zhi<=(warn_volt_onlimt+400)&&dianya_zhi>=330&&warning_flag==0)
+if(dianya_zhi<=(warn_volt_onlimt+400)&&dianya_zhi>=310&&warning_flag==0)
 {
-if(gonglvshishu<95&&L_C_flag==1)
+if(gonglvshishu<90&&L_C_flag==1)
  {
       {
       if(wugongkvar>=20)
@@ -2083,7 +2083,7 @@ delay_ms(TIME_TQ);
 
  }
 
-if(gonglvshishu>98&&L_C_flag==1)
+if(gonglvshishu>93&&L_C_flag==1)
    
 {
 

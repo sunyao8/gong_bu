@@ -11,7 +11,7 @@ u8 zhongduan_flag_BT=1;
 u8 zhongduan_flag_warn_volt=1;
 vu8 id_num=1,BT_num=1;
 vu8	warn_volt_onlimt=25;//นýันึต +400
-vu8 grafnum=1,tempshuzhi,vernum=105,hguestnum=222,gonglvshishu=0;
+vu8 grafnum=1,tempshuzhi,vernum=106,hguestnum=222,gonglvshishu=0;
 vu16 dianya_zhi=0,wugongkvar=0;
 vu32	dianliuzhi=0;
  vu8 ligt_time=16;
