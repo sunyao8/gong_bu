@@ -233,7 +233,7 @@ if(init_time>0)init_time--;
 }
  
  void TIM3_IRQHandler(void)   //TIM4中断
-{	 static u8 count_rework[2];
+{	 static u16 count_rework[2];
 	OSIntEnter();   
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)  //检查TIM4更新中断发生与否
 		{	  
@@ -242,7 +242,7 @@ if(init_time>0)init_time--;
  if(rework_time[0]==1)
  	{
  	count_rework[0]++;
-	if(count_rework[0]==120)
+	if(count_rework[0]==120*10)
 		{
 count_rework[0]=0;
 rework_time[0]=0;
@@ -253,7 +253,7 @@ rework_time[0]=0;
   if(rework_time[1]==1)
  	{
  	count_rework[1]++;
-	if(count_rework[1]==120)
+	if(count_rework[1]==120*10)
 		{
 count_rework[1]=0;
 rework_time[1]=0;
@@ -2083,7 +2083,7 @@ delay_ms(TIME_TQ);
 
  }
 
-if(gonglvshishu>93&&L_C_flag==1)
+if(gonglvshishu>95&&L_C_flag==1)
    
 {
 

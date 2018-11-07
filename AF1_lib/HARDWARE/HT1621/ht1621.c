@@ -156,7 +156,7 @@ void Graf_con_u(u8 cos,u16 volt)
 		Write_1621(12,0x04);   //显示U(v)
 	Write_1621(14,0x01);   //显示cos
 	Write_1621(17,0x01);   //显示dot.
-	Write_1621(15,0x01);   //logo
+//	Write_1621(15,0x01);   //logo
 	   if(auto_on==1)
    Write_1621(6,0x01);	//显示auto
    if(auto_on==0)
@@ -210,7 +210,7 @@ void Graf_cuirrent(u32 current)
    Write_1621(6,0x01);	//显示auto
    if(auto_on==0)
    	   Write_1621(5,0x01);	//显示hand
-	Write_1621(15,0x01);   //logo
+//	Write_1621(15,0x01);   //logo
 
    temp=current;
 
@@ -236,7 +236,7 @@ void Graf_qkvar(u16 qkvar)
    u32 temp;
    u16 qkvarshiwei,qkvargewei,qkvarshifenwei,qkvarbaifenwei,qkvarqianfenwei;
 
-	Write_1621(15,0x05);	//显示Q(Kvar),logo
+//	Write_1621(15,0x05);	//显示Q(Kvar),logo
 //	Write_1621(11,0x08);	//显示dot8 .
 	   if(auto_on==1)
    Write_1621(6,0x01);	//显示auto
@@ -271,7 +271,7 @@ void Graf_temp(u8 temp)
    Write_1621(6,0x01);	//显示auto
    if(auto_on==0)
    	   Write_1621(5,0x01);	//显示hand
-	Write_1621(15,0x01);   //logo
+//	Write_1621(15,0x01);   //logo
 
 	tempbaiwei=temp/100;
 	WriteAll_1621(2,num12345Seg+2*tempbaiwei,2);	//显示TEMP百数位
@@ -293,7 +293,7 @@ void Graf_id(u8 hostguest,u8 id)
    Write_1621(6,0x01);	//显示auto
    if(auto_on==0)
    	   Write_1621(5,0x01);	//显示hand
-	Write_1621(15,0x01);   //logo
+//	Write_1621(15,0x01);   //logo
 
 	h_gbaiwei=hostguest/100;
 	WriteAll_1621(16,num12345Seg+2*h_gbaiwei,2);	//显示机号百位数
@@ -325,7 +325,7 @@ void Graf_ver(u8 ver)
    Write_1621(6,0x01);	//显示auto
    if(auto_on==0)
    	   Write_1621(5,0x01);	//显示hand
-	Write_1621(15,0x01);   //logo
+	//Write_1621(15,0x01);   //logo
 
    verbaiwei=ver/100;
    WriteAll_1621(2,num12345Seg+2*verbaiwei,2);	//显示VER百数位
@@ -343,7 +343,7 @@ void Graf_setid(u8 idnum)
   
    Write_1621(6,0x08);	//显示set
    Write_1621(7,0x08);	//显示ID
-   	Write_1621(15,0x01);   //logo
+   //	Write_1621(15,0x01);   //logo
 
    idnumbaiwei=idnum/100;
    WriteAll_1621(2,num12345Seg+2*idnumbaiwei,2);	//显示idnum百数位
@@ -360,7 +360,7 @@ void Graf_setBT(u16 idnum)
 {   
    u8 idnumqianwei,idnumbaiwei,idnumshiwei,idnumgewei;
   
-   	Write_1621(15,0x01);   //logo
+  // 	Write_1621(15,0x01);   //logo
       	Write_1621(10,0x04);   //"-"
        WriteAll_1621(8,num67Seg+2*5,2);	//显示5
 	
@@ -382,7 +382,7 @@ void Graf_set_warn_volt(u16 voltnum)
 {   
    u8 idnumbaiwei,idnumshiwei,idnumgewei;
 		Write_1621(12,0x04);   //显示U(v)  
-   	Write_1621(15,0x01);   //logo
+ //  	Write_1621(15,0x01);   //logo
 
    idnumbaiwei=voltnum/100;
    WriteAll_1621(2,num12345Seg+2*idnumbaiwei,2);	//显示idnum百数位

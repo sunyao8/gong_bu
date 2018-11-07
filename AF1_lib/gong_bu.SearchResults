@@ -1,19 +1,2 @@
----- warn_volt_onlimt Matches (17 in 3 files) ----
-485ANN.c (hardware\485ann):extern vu8 warn_volt_onlimt;
-485ANN.c (hardware\485ann):warn_volt_onlimt=	AT24CXX_ReadOneByte(0x1000);					
-485ANN.c (hardware\485ann):if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330))
-485ANN.c (hardware\485ann):if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330)&&warning_flag==0)
-485ANN.c (hardware\485ann):if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-7)&&dianya_zhi>=333)
-485ANN.c (hardware\485ann):if(dianya_zhi<=(warn_volt_onlimt+400)&&dianya_zhi>=330&&warning_flag==0)
-Key.c (hardware\key):vu8	warn_volt_onlimt=25;//¹ýÑ¹Öµ +400
-Key.c (hardware\key):			   		Graf_set_warn_volt(warn_volt_onlimt+400);
-Key.c (hardware\key):							warn_volt_onlimt=warn_volt_onlimt+5;
-Key.c (hardware\key):					  		if(warn_volt_onlimt>50)warn_volt_onlimt=0;
-Key.c (hardware\key):			   		   Graf_set_warn_volt(warn_volt_onlimt+400);
-Key.c (hardware\key):							AT24CXX_WriteOneByte(0x1000,warn_volt_onlimt);
-Main.c (user):extern vu8 warn_volt_onlimt;
-Main.c (user):if((dianya_zhi>(warn_volt_onlimt+400)||dianya_zhi<330)&&warning_flag==0)
-Main.c (user):if(warning_flag==1&&dianya_zhi<=(warn_volt_onlimt+400-3)&&dianya_zhi>=333)
----- warn_volt_onlimt Search Errors Encountered (1) ----
-The following 1 files could not be processed:
-C:\Users\Administrator\Documents\GitHub\gong_bu\AF1_lib\USER\JLinkLog.txt : File could not be opened.
+---- TIM3_Int_Init Matches (1 in 0 files) ----
+485ANN.c (hardware\485ann): void TIM3_Int_Init(u16 arr,u16 psc)

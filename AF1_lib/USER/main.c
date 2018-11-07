@@ -139,8 +139,8 @@ void EXTI_Configuration(void);//初始化函数
 
 //#define ID  1
 #define temperature_gate 55
-#define SIZE_1 5
-#define SIZE_2 10
+#define SIZE_1 20
+#define SIZE_2 20
 #define WORK_STATUS_1	 0//0为没有工作  1为工作  2为坏掉，初始化为0
 #define WORK_STATUS_2    0 
 #define WORK_TIME_1 0
